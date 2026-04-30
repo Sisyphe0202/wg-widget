@@ -9,6 +9,10 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.IBinder
 import android.widget.RemoteViews
 import org.json.JSONObject
@@ -62,6 +66,55 @@ class RefreshService : Service() {
 
     private fun trim(s: String, n: Int): String =
         if (s.length <= n) s else s.take(n - 1) + "…"
+
+    private fun drawSprite(c: Canvas, grid: Array<String>, ox: Int, oy: Int, px: Int, paint: Paint) {
+        for (y in grid.indices) {
+            val row = grid[y]
+            for (x in row.indices) {
+                if (row[x] == 'X') {
+                    val left = ((ox + x) * px).toFloat()
+                    val top = ((oy + y) * px).toFloat()
+                    c.drawRect(left, top, left + px, top + px, paint)
+                }
+            }
+        }
+    }
+
+    private fun renderDinoScene(state: Int, gameOver: Boolean): Bitmap {
+        val px = 3
+        val gridW = 80
+        val gridH = 20
+        val w = gridW * px
+        val h = gridH * px
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bmp)
+
+        val green = Paint().apply {
+            color = Color.parseColor("#3FB950")
+            isAntiAlias = false
+        }
+
+        val dinoSprite = when {
+            gameOver -> Sprites.DINO_DEAD
+            state == 0 -> Sprites.DINO_STAND
+            else -> if ((System.currentTimeMillis() / 400) % 2 == 0L)
+                Sprites.DINO_RUN1 else Sprites.DINO_RUN2
+        }
+
+        val dinoOy = gridH - dinoSprite.size - 1
+        drawSprite(canvas, dinoSprite, 0, dinoOy, px, green)
+
+        val cactus = Sprites.CACTUS_BIG
+        val cactusOx = gridW - cactus[0].length - 4
+        val cactusOy = gridH - cactus.size - 1
+        drawSprite(canvas, cactus, cactusOx, cactusOy, px, green)
+
+        val groundY = gridH - 1
+        canvas.drawRect(0f, (groundY * px).toFloat(),
+            (gridW * px).toFloat(), ((groundY + 1) * px).toFloat(), green)
+
+        return bmp
+    }
 
     private fun doRefresh() {
         val mgr = AppWidgetManager.getInstance(this)
@@ -133,15 +186,13 @@ class RefreshService : Service() {
                 .putLong(KEY_LAST_TS, (nowTs * 1000).toLong())
                 .apply()
 
-            val dinoText = when {
-                lastTotal == 0L -> "🦖    ___    🌵"
-                bps < 1_000 -> "💤 🦖    🌵"
-                bps < 100_000 -> "🦖💨    ___"
-                bps < 1_000_000 -> "🦖💨💨    ___"
-                bps < 10_000_000 -> "🦖💨💨💨"
-                else -> "🦖💨💨💨💨💨"
+            val dinoState = when {
+                lastTotal == 0L -> 0
+                bps < 1_000 -> 0
+                bps < 100_000 -> 1
+                else -> 2
             }
-            views.setTextViewText(R.id.wg_dino, dinoText)
+            views.setImageViewBitmap(R.id.wg_dino, renderDinoScene(dinoState, false))
 
         } catch (e: Exception) {
             views.setTextViewText(R.id.wg_remaining, "—")
@@ -153,7 +204,7 @@ class RefreshService : Service() {
             views.setTextViewText(R.id.wg_peer1_app, "")
             views.setTextViewText(R.id.wg_peer2, "")
             views.setTextViewText(R.id.wg_peer2_app, "")
-            views.setTextViewText(R.id.wg_dino, "🦖❌  连不上")
+            views.setImageViewBitmap(R.id.wg_dino, renderDinoScene(0, true))
         }
 
         val pi = PendingIntent.getForegroundService(

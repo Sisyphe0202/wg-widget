@@ -138,12 +138,10 @@
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"/>
 
-    <TextView
+    <ImageView
         android:id="@+id/wg_dino"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="🦖"
-        android:textColor="#7EE787"
-        android:textSize="14sp"
-        android:fontFamily="monospace"/>
+        android:layout_height="32dp"
+        android:scaleType="fitStart"
+        android:contentDescription="dino"/>
 </LinearLayout>
