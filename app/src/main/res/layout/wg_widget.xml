@@ -10,16 +10,18 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="本月剩余"
-        android:textColor="#8B949E"
-        android:textSize="11sp"/>
+        android:text="$ wg quota --remaining"
+        android:textColor="#5FB76E"
+        android:textSize="10sp"
+        android:fontFamily="monospace"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:baselineAligned="false"
-        android:gravity="bottom">
+        android:gravity="bottom"
+        android:layout_marginTop="2dp">
 
         <TextView
             android:id="@+id/wg_remaining"
@@ -28,16 +30,18 @@
             android:text="—"
             android:textColor="#3FB950"
             android:textSize="28sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:fontFamily="monospace"/>
 
         <TextView
             android:id="@+id/wg_budget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#8B949E"
+            android:textColor="#7EE787"
             android:textSize="11sp"
             android:layout_marginStart="6dp"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="4dp"
+            android:fontFamily="monospace"/>
     </LinearLayout>
 
     <ProgressBar
@@ -47,21 +51,25 @@
         android:layout_height="6dp"
         android:layout_marginTop="6dp"
         android:max="100"
-        android:progress="0"/>
+        android:progress="0"
+        android:progressTint="#3FB950"
+        android:progressBackgroundTint="#1F6F2C"/>
 
     <TextView
         android:id="@+id/wg_reset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#8B949E"
+        android:textColor="#5FB76E"
         android:textSize="11sp"
-        android:layout_marginTop="6dp"/>
+        android:layout_marginTop="6dp"
+        android:fontFamily="monospace"/>
 
     <TextView
         android:id="@+id/wg_peers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#E6EDF3"
+        android:textColor="#3FB950"
         android:textSize="11sp"
-        android:layout_marginTop="2dp"/>
+        android:layout_marginTop="2dp"
+        android:fontFamily="monospace"/>
 </LinearLayout>
