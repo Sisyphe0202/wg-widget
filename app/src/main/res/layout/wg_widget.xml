@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1.4"
             android:orientation="vertical"
-            android:layout_marginEnd="8dp">
+            android:layout_marginEnd="6dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:text="—"
                     android:textColor="#3FB950"
-                    android:textSize="22sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     android:fontFamily="monospace"/>
 
@@ -52,8 +52,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#7EE787"
-                    android:textSize="10sp"
-                    android:layout_marginStart="4dp"
+                    android:textSize="9sp"
+                    android:layout_marginStart="3dp"
                     android:layout_marginBottom="3dp"
                     android:fontFamily="monospace"/>
             </LinearLayout>
@@ -62,8 +62,8 @@
                 android:id="@+id/wg_progress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
-                android:layout_marginTop="6dp"
+                android:layout_height="5dp"
+                android:layout_marginTop="4dp"
                 android:max="100"
                 android:progress="0"
                 android:progressTint="#3FB950"
@@ -74,8 +74,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#5FB76E"
-                android:textSize="10sp"
-                android:layout_marginTop="6dp"
+                android:textSize="9sp"
+                android:layout_marginTop="4dp"
                 android:fontFamily="monospace"/>
         </LinearLayout>
 
@@ -89,16 +89,29 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="8dp">
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp">
 
             <TextView
-                android:id="@+id/wg_peer1"
+                android:id="@+id/wg_peer1_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#3FB950"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:fontFamily="monospace"/>
+
+            <TextView
+                android:id="@+id/wg_peer1_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#7EE787"
+                android:textSize="11sp"
+                android:fontFamily="monospace"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"/>
 
             <TextView
                 android:id="@+id/wg_peer1_app"
@@ -108,12 +121,29 @@
                 android:textSize="9sp"
                 android:fontFamily="monospace"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="6dp"/>
+            <TextView
+                android:id="@+id/wg_peer1_app_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#5FB76E"
+                android:textSize="9sp"
+                android:fontFamily="monospace"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#1F6F2C"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="6dp">
 
             <TextView
-                android:id="@+id/wg_peer2"
+                android:id="@+id/wg_peer2_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#3FB950"
@@ -122,7 +152,27 @@
                 android:fontFamily="monospace"/>
 
             <TextView
+                android:id="@+id/wg_peer2_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#7EE787"
+                android:textSize="11sp"
+                android:fontFamily="monospace"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"/>
+
+            <TextView
                 android:id="@+id/wg_peer2_app"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#5FB76E"
+                android:textSize="9sp"
+                android:fontFamily="monospace"/>
+
+            <TextView
+                android:id="@+id/wg_peer2_app_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#5FB76E"

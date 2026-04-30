@@ -158,20 +158,27 @@ class RefreshService : Service() {
                 val total = p.getLong("up") + p.getLong("down")
                 totalNow += total
                 val mark = if (online) "●" else "○"
-                val peerLine = "$mark $label  ${fmtGb(total)}"
+                val labelLine = "$label $mark"
+                val totalLine = fmtGb(total)
 
-                var topApp = "→ —"
+                var appName = "→ —"
+                var appSize = ""
                 byPeer?.optJSONArray(ip)?.takeIf { it.length() > 0 }?.let { arr ->
                     val a = arr.getJSONObject(0)
-                    topApp = "→ ${trim(a.getString("app"), 10)} ${fmtBytes(a.getLong("bytes"))}"
+                    appName = "→ ${trim(a.getString("app"), 8)}"
+                    appSize = "  ${fmtBytes(a.getLong("bytes"))}"
                 }
 
                 if (i == 0) {
-                    views.setTextViewText(R.id.wg_peer1, peerLine)
-                    views.setTextViewText(R.id.wg_peer1_app, topApp)
+                    views.setTextViewText(R.id.wg_peer1_label, labelLine)
+                    views.setTextViewText(R.id.wg_peer1_total, totalLine)
+                    views.setTextViewText(R.id.wg_peer1_app, appName)
+                    views.setTextViewText(R.id.wg_peer1_app_size, appSize)
                 } else {
-                    views.setTextViewText(R.id.wg_peer2, peerLine)
-                    views.setTextViewText(R.id.wg_peer2_app, topApp)
+                    views.setTextViewText(R.id.wg_peer2_label, labelLine)
+                    views.setTextViewText(R.id.wg_peer2_total, totalLine)
+                    views.setTextViewText(R.id.wg_peer2_app, appName)
+                    views.setTextViewText(R.id.wg_peer2_app_size, appSize)
                 }
             }
 
@@ -200,10 +207,14 @@ class RefreshService : Service() {
             views.setProgressBar(R.id.wg_progress, 100, 0, false)
             val msg = "${e.javaClass.simpleName}: ${e.message ?: ""}".take(80)
             views.setTextViewText(R.id.wg_reset, msg)
-            views.setTextViewText(R.id.wg_peer1, "")
+            views.setTextViewText(R.id.wg_peer1_label, "")
+            views.setTextViewText(R.id.wg_peer1_total, "")
             views.setTextViewText(R.id.wg_peer1_app, "")
-            views.setTextViewText(R.id.wg_peer2, "")
+            views.setTextViewText(R.id.wg_peer1_app_size, "")
+            views.setTextViewText(R.id.wg_peer2_label, "")
+            views.setTextViewText(R.id.wg_peer2_total, "")
             views.setTextViewText(R.id.wg_peer2_app, "")
+            views.setTextViewText(R.id.wg_peer2_app_size, "")
             views.setImageViewBitmap(R.id.wg_dino, renderDinoScene(0, true))
         }
 
