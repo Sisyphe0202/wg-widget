@@ -47,8 +47,8 @@ class WgWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.wg_widget)
             try {
                 val conn = (URL(SNAPSHOT_URL).openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 4000
-                    readTimeout = 4000
+                    connectTimeout = 10_000
+                    readTimeout = 10_000
                 }
                 val text = conn.inputStream.bufferedReader().use { it.readText() }
                 val root = JSONObject(text)
@@ -78,8 +78,9 @@ class WgWidgetProvider : AppWidgetProvider() {
                 views.setTextViewText(R.id.wg_remaining, "—")
                 views.setTextViewText(R.id.wg_budget, "")
                 views.setProgressBar(R.id.wg_progress, 100, 0, false)
-                views.setTextViewText(R.id.wg_reset, "无法连接 (${e.javaClass.simpleName})")
-                views.setTextViewText(R.id.wg_peers, "")
+                val msg = "${e.javaClass.simpleName}: ${e.message ?: ""}".take(80)
+                views.setTextViewText(R.id.wg_reset, msg)
+                views.setTextViewText(R.id.wg_peers, "点击重试")
             }
 
             val pi = PendingIntent.getBroadcast(
