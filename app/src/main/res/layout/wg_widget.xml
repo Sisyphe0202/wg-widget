@@ -4,72 +4,146 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="12dp"
+    android:padding="10dp"
     android:background="@drawable/widget_bg">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="$ wg quota --remaining"
-        android:textColor="#5FB76E"
-        android:textSize="10sp"
-        android:fontFamily="monospace"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="horizontal"
-        android:baselineAligned="false"
-        android:gravity="bottom"
-        android:layout_marginTop="2dp">
+        android:baselineAligned="false">
 
-        <TextView
-            android:id="@+id/wg_remaining"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="—"
-            android:textColor="#3FB950"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:fontFamily="monospace"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.4"
+            android:orientation="vertical"
+            android:layout_marginEnd="8dp">
 
-        <TextView
-            android:id="@+id/wg_budget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#7EE787"
-            android:textSize="11sp"
-            android:layout_marginStart="6dp"
-            android:layout_marginBottom="4dp"
-            android:fontFamily="monospace"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$ wg quota"
+                android:textColor="#5FB76E"
+                android:textSize="9sp"
+                android:fontFamily="monospace"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false"
+                android:gravity="bottom"
+                android:layout_marginTop="2dp">
+
+                <TextView
+                    android:id="@+id/wg_remaining"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="#3FB950"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"/>
+
+                <TextView
+                    android:id="@+id/wg_budget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#7EE787"
+                    android:textSize="10sp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginBottom="3dp"
+                    android:fontFamily="monospace"/>
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/wg_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="6dp"
+                android:max="100"
+                android:progress="0"
+                android:progressTint="#3FB950"
+                android:progressBackgroundTint="#1F6F2C"/>
+
+            <TextView
+                android:id="@+id/wg_reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#5FB76E"
+                android:textSize="10sp"
+                android:layout_marginTop="6dp"
+                android:fontFamily="monospace"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#1F6F2C"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="8dp">
+
+            <TextView
+                android:id="@+id/wg_peer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#3FB950"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"/>
+
+            <TextView
+                android:id="@+id/wg_peer1_app"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#5FB76E"
+                android:textSize="9sp"
+                android:fontFamily="monospace"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="6dp"/>
+
+            <TextView
+                android:id="@+id/wg_peer2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#3FB950"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"/>
+
+            <TextView
+                android:id="@+id/wg_peer2_app"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#5FB76E"
+                android:textSize="9sp"
+                android:fontFamily="monospace"/>
+        </LinearLayout>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/wg_progress"
-        style="?android:attr/progressBarStyleHorizontal"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="6dp"
+        android:layout_height="1dp"
+        android:background="#1F6F2C"
         android:layout_marginTop="6dp"
-        android:max="100"
-        android:progress="0"
-        android:progressTint="#3FB950"
-        android:progressBackgroundTint="#1F6F2C"/>
+        android:layout_marginBottom="6dp"/>
 
     <TextView
-        android:id="@+id/wg_reset"
-        android:layout_width="wrap_content"
+        android:id="@+id/wg_dino"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#5FB76E"
-        android:textSize="11sp"
-        android:layout_marginTop="6dp"
-        android:fontFamily="monospace"/>
-
-    <TextView
-        android:id="@+id/wg_peers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#3FB950"
-        android:textSize="11sp"
-        android:layout_marginTop="2dp"
+        android:text="🦖"
+        android:textColor="#7EE787"
+        android:textSize="14sp"
         android:fontFamily="monospace"/>
 </LinearLayout>
