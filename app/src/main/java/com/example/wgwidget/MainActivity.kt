@@ -45,11 +45,8 @@ class MainActivity : Activity() {
         }
 
         findViewById<Button>(R.id.btn_refresh).setOnClickListener {
-            sendBroadcast(Intent(this, WgWidgetProvider::class.java).apply {
-                action = WgWidgetProvider.ACTION_REFRESH
-                `package` = packageName
-            })
-            status.text = "已发送刷新广播给 widget。\n如果 widget 还显示无法连接，问题在后台限制。"
+            startForegroundService(Intent(this, RefreshService::class.java))
+            status.text = "已启动前台服务刷新 widget。"
         }
     }
 }
