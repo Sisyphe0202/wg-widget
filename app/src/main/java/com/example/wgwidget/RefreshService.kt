@@ -81,7 +81,7 @@ class RefreshService : Service() {
     }
 
     private fun renderDinoScene(dinoSprite: Array<String>): Bitmap {
-        val px = 3
+        val px = 4
         val gridW = 70
         val gridH = 23
         val w = gridW * px
