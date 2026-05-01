@@ -31,6 +31,10 @@ class MainActivity : Activity() {
 
         val status = findViewById<TextView>(R.id.tv_status)
 
+        val pInfo = packageManager.getPackageInfo(packageName, 0)
+        findViewById<TextView>(R.id.tv_version).text =
+            "WG 流量监控 v${pInfo.versionName} (#${pInfo.longVersionCode})"
+
         findViewById<Button>(R.id.btn_test).setOnClickListener {
             status.text = "测试中…\nURL: ${WgWidgetProvider.SNAPSHOT_URL}"
             executor.execute {
