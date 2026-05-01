@@ -80,10 +80,10 @@ class RefreshService : Service() {
         }
     }
 
-    private fun renderDinoScene(state: Int, gameOver: Boolean): Bitmap {
+    private fun renderDinoScene(dinoSprite: Array<String>): Bitmap {
         val px = 3
-        val gridW = 80
-        val gridH = 20
+        val gridW = 70
+        val gridH = 23
         val w = gridW * px
         val h = gridH * px
         val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
@@ -92,13 +92,6 @@ class RefreshService : Service() {
         val green = Paint().apply {
             color = Color.parseColor("#3FB950")
             isAntiAlias = false
-        }
-
-        val dinoSprite = when {
-            gameOver -> Sprites.DINO_DEAD
-            state == 0 -> Sprites.DINO_STAND
-            else -> if ((System.currentTimeMillis() / 400) % 2 == 0L)
-                Sprites.DINO_RUN1 else Sprites.DINO_RUN2
         }
 
         val dinoOy = gridH - dinoSprite.size - 1
@@ -144,21 +137,28 @@ class RefreshService : Service() {
             views.setTextViewText(R.id.wg_remaining, "%.2f".format(remainGb))
             views.setTextViewText(R.id.wg_budget, "/ %.2f GB".format(budgetGb))
             views.setProgressBar(R.id.wg_progress, 100, pct, false)
-            views.setTextViewText(R.id.wg_reset, "距重置 ${days} 天 · 已用 ${pct}%")
+            views.setTextViewText(R.id.wg_reset, "Reset in ${days}d · Used ${pct}%")
 
             val peers = root.getJSONArray("peers")
             val byPeer = root.optJSONObject("apps")?.optJSONObject("by_peer")
 
             var totalNow = 0L
+            var anyOnline = false
             for (i in 0 until peers.length().coerceAtMost(2)) {
                 val p = peers.getJSONObject(i)
                 val ip = p.getString("ip")
                 val label = p.getString("label")
                 val online = p.getBoolean("online")
+                if (online) anyOnline = true
                 val total = p.getLong("up") + p.getLong("down")
                 totalNow += total
                 val mark = if (online) "●" else "○"
-                val labelLine = "$label $mark"
+                val displayLabel = when (label) {
+                    "手机" -> "Phone"
+                    "电脑" -> "PC"
+                    else -> label
+                }
+                val labelLine = "$displayLabel $mark"
                 val totalLine = fmtGb(total)
 
                 var appName = "→ —"
@@ -182,24 +182,14 @@ class RefreshService : Service() {
                 }
             }
 
-            val lastTotal = prefs.getLong(KEY_LAST_TOTAL, 0L)
-            val lastTs = prefs.getLong(KEY_LAST_TS, 0L) / 1000.0
-            val dt = (nowTs - lastTs).coerceAtLeast(1.0)
-            val deltaBytes = if (lastTotal > 0) (totalNow - lastTotal).coerceAtLeast(0L) else 0L
-            val bps = if (lastTotal > 0) (deltaBytes / dt).toLong() else 0L
-
-            prefs.edit()
-                .putLong(KEY_LAST_TOTAL, totalNow)
-                .putLong(KEY_LAST_TS, (nowTs * 1000).toLong())
-                .apply()
-
-            val dinoState = when {
-                lastTotal == 0L -> 0
-                bps < 1_000 -> 0
-                bps < 100_000 -> 1
-                else -> 2
+            if (anyOnline) {
+                views.setImageViewBitmap(R.id.wg_dino_a, renderDinoScene(Sprites.DINO_RUN1))
+                views.setImageViewBitmap(R.id.wg_dino_b, renderDinoScene(Sprites.DINO_RUN2))
+            } else {
+                val stand = renderDinoScene(Sprites.DINO_STAND)
+                views.setImageViewBitmap(R.id.wg_dino_a, stand)
+                views.setImageViewBitmap(R.id.wg_dino_b, stand)
             }
-            views.setImageViewBitmap(R.id.wg_dino, renderDinoScene(dinoState, false))
 
         } catch (e: Exception) {
             views.setTextViewText(R.id.wg_remaining, "—")
@@ -215,7 +205,9 @@ class RefreshService : Service() {
             views.setTextViewText(R.id.wg_peer2_total, "")
             views.setTextViewText(R.id.wg_peer2_app, "")
             views.setTextViewText(R.id.wg_peer2_app_size, "")
-            views.setImageViewBitmap(R.id.wg_dino, renderDinoScene(0, true))
+            val dead = renderDinoScene(Sprites.DINO_DEAD)
+            views.setImageViewBitmap(R.id.wg_dino_a, dead)
+            views.setImageViewBitmap(R.id.wg_dino_b, dead)
         }
 
         val pi = PendingIntent.getForegroundService(
