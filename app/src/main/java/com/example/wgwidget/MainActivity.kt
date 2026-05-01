@@ -2,17 +2,25 @@ package com.example.wgwidget
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.FileProvider
 import org.json.JSONObject
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
 
 class MainActivity : Activity() {
+
+    companion object {
+        const val RELEASE_API =
+            "https://api.github.com/repos/Sisyphe0202/wg-widget/releases/latest"
+    }
 
     private val executor = Executors.newSingleThreadExecutor()
     private val handler = Handler(Looper.getMainLooper())
@@ -47,6 +55,79 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.btn_refresh).setOnClickListener {
             startForegroundService(Intent(this, RefreshService::class.java))
             status.text = "已启动前台服务刷新 widget。"
+        }
+
+        findViewById<Button>(R.id.btn_update).setOnClickListener {
+            status.text = "检查更新中…"
+            executor.execute { checkAndInstallUpdate(status) }
+        }
+    }
+
+    private fun checkAndInstallUpdate(status: TextView) {
+        try {
+            val apiConn = (URL(RELEASE_API).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 15_000
+                readTimeout = 15_000
+                setRequestProperty("Accept", "application/vnd.github+json")
+                setRequestProperty("User-Agent", "wg-widget-updater")
+            }
+            val body = apiConn.inputStream.bufferedReader().use { it.readText() }
+            val release = JSONObject(body)
+            val publishedAt = release.optString("published_at", "?")
+            val assets = release.getJSONArray("assets")
+            var apkUrl: String? = null
+            for (i in 0 until assets.length()) {
+                val a = assets.getJSONObject(i)
+                if (a.getString("name").endsWith(".apk")) {
+                    apkUrl = a.getString("browser_download_url")
+                    break
+                }
+            }
+            if (apkUrl == null) {
+                handler.post { status.text = "FAIL  release 里没有 .apk 文件" }
+                return
+            }
+
+            handler.post { status.text = "下载中…\n$publishedAt\n$apkUrl" }
+
+            val apkFile = File(cacheDir, "update.apk")
+            if (apkFile.exists()) apkFile.delete()
+            (URL(apkUrl).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 15_000
+                readTimeout = 60_000
+                instanceFollowRedirects = true
+                setRequestProperty("User-Agent", "wg-widget-updater")
+            }.inputStream.use { input ->
+                apkFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            val sizeKb = apkFile.length() / 1024
+            handler.post {
+                status.text = "下载完成 ${sizeKb} KB\n准备安装…"
+                installApk(apkFile, status)
+            }
+        } catch (e: Exception) {
+            handler.post {
+                status.text = "FAIL ${e.javaClass.simpleName}\n${e.message ?: ""}"
+            }
+        }
+    }
+
+    private fun installApk(file: File, status: TextView) {
+        try {
+            val uri: Uri = FileProvider.getUriForFile(
+                this, "$packageName.fileprovider", file
+            )
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/vnd.android.package-archive")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            status.text = "安装触发失败\n${e.javaClass.simpleName}: ${e.message}"
         }
     }
 }

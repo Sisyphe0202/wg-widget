@@ -28,15 +28,16 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="# 长按主屏 -> 小部件 -> WG 流量监控"
+        android:text="# 长按主屏 -&gt; 小部件 -&gt; WG 流量监控"
         android:textColor="#5FB76E"
         android:textSize="12sp"
         android:fontFamily="monospace"
         android:layout_marginTop="20dp"/>
 
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:orientation="horizontal"
         android:background="#1F6F2C"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"/>
@@ -59,6 +60,16 @@
         android:fontFamily="monospace"
         android:textColor="#000000"
         android:backgroundTint="#3FB950"/>
+
+    <Button
+        android:id="@+id/btn_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="check_update()"
+        android:fontFamily="monospace"
+        android:textColor="#000000"
+        android:backgroundTint="#7EE787"/>
 
     <TextView
         android:id="@+id/tv_status"
