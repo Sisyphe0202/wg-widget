@@ -19,6 +19,18 @@ android {
     namespace = "com.example.wgwidget"
     compileSdk = 34
 
+    signingConfigs {
+        getByName("debug") {
+            val ks = rootProject.file("keystore/debug.keystore")
+            if (ks.exists()) {
+                storeFile = ks
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.example.wgwidget"
         minSdk = 26
