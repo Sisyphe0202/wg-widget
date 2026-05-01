@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.widget.RemoteViews
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -35,6 +36,13 @@ class WgWidgetProvider : AppWidgetProvider() {
         for (id in ids) {
             val views = RemoteViews(context.packageName, R.layout.wg_widget)
             views.setOnClickPendingIntent(R.id.wg_root, pi)
+
+            val adapterIntent = Intent(context, DinoRemoteViewsService::class.java).apply {
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+                data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
+            }
+            views.setRemoteAdapter(R.id.wg_dino_flipper, adapterIntent)
+
             mgr.updateAppWidget(id, views)
         }
         runCatching {

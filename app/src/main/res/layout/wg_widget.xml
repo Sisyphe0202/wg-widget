@@ -25,8 +25,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="REMAINING"
-                android:textColor="#5FB76E"
-                android:textSize="9sp"
+                android:textColor="#3FB950"
+                android:textSize="11sp"
+                android:textStyle="bold"
                 android:fontFamily="monospace"/>
 
             <LinearLayout
@@ -185,26 +186,12 @@
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"/>
 
-    <ViewFlipper
+    <AdapterViewFlipper
         android:id="@+id/wg_dino_flipper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:autoStart="true"
-        android:flipInterval="300">
-
-        <ImageView
-            android:id="@+id/wg_dino_a"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitStart"
-            android:contentDescription="dino"/>
-
-        <ImageView
-            android:id="@+id/wg_dino_b"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitStart"
-            android:contentDescription="dino"/>
-    </ViewFlipper>
+        android:autoAdvance="true"
+        android:flipInterval="300"
+        android:loopViews="true"/>
 </LinearLayout>

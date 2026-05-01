@@ -182,14 +182,10 @@ class RefreshService : Service() {
                 }
             }
 
-            if (anyOnline) {
-                views.setImageViewBitmap(R.id.wg_dino_a, renderDinoScene(Sprites.DINO_RUN1))
-                views.setImageViewBitmap(R.id.wg_dino_b, renderDinoScene(Sprites.DINO_RUN2))
-            } else {
-                val stand = renderDinoScene(Sprites.DINO_STAND)
-                views.setImageViewBitmap(R.id.wg_dino_a, stand)
-                views.setImageViewBitmap(R.id.wg_dino_b, stand)
-            }
+            val state = if (anyOnline) "running" else "stand"
+            getSharedPreferences("wg_state", Context.MODE_PRIVATE)
+                .edit().putString("dino_state", state).apply()
+            mgr.notifyAppWidgetViewDataChanged(ids, R.id.wg_dino_flipper)
 
         } catch (e: Exception) {
             views.setTextViewText(R.id.wg_remaining, "—")
@@ -205,9 +201,9 @@ class RefreshService : Service() {
             views.setTextViewText(R.id.wg_peer2_total, "")
             views.setTextViewText(R.id.wg_peer2_app, "")
             views.setTextViewText(R.id.wg_peer2_app_size, "")
-            val dead = renderDinoScene(Sprites.DINO_DEAD)
-            views.setImageViewBitmap(R.id.wg_dino_a, dead)
-            views.setImageViewBitmap(R.id.wg_dino_b, dead)
+            getSharedPreferences("wg_state", Context.MODE_PRIVATE)
+                .edit().putString("dino_state", "dead").apply()
+            mgr.notifyAppWidgetViewDataChanged(ids, R.id.wg_dino_flipper)
         }
 
         val pi = PendingIntent.getForegroundService(
