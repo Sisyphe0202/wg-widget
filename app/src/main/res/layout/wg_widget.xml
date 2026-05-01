@@ -79,9 +79,10 @@
                 android:fontFamily="monospace"/>
         </LinearLayout>
 
-        <View
+        <LinearLayout
             android:layout_width="1dp"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:background="#1F6F2C"/>
 
         <LinearLayout
@@ -109,16 +110,13 @@
                 android:textSize="11sp"
                 android:fontFamily="monospace"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="4dp"/>
-
             <TextView
                 android:id="@+id/wg_peer1_app"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#5FB76E"
                 android:textSize="9sp"
+                android:layout_marginTop="4dp"
                 android:fontFamily="monospace"/>
 
             <TextView
@@ -130,9 +128,10 @@
                 android:fontFamily="monospace"/>
         </LinearLayout>
 
-        <View
+        <LinearLayout
             android:layout_width="1dp"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:background="#1F6F2C"/>
 
         <LinearLayout
@@ -159,16 +158,13 @@
                 android:textSize="11sp"
                 android:fontFamily="monospace"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="4dp"/>
-
             <TextView
                 android:id="@+id/wg_peer2_app"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#5FB76E"
                 android:textSize="9sp"
+                android:layout_marginTop="4dp"
                 android:fontFamily="monospace"/>
 
             <TextView
@@ -181,9 +177,10 @@
         </LinearLayout>
     </LinearLayout>
 
-    <View
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:orientation="horizontal"
         android:background="#1F6F2C"
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"/>
