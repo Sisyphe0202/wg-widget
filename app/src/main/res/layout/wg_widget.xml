@@ -186,12 +186,10 @@
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"/>
 
-    <AdapterViewFlipper
-        android:id="@+id/wg_dino_flipper"
+    <ImageView
+        android:id="@+id/wg_dino_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:autoStart="true"
-        android:flipInterval="300"
-        android:loopViews="true"/>
+        android:scaleType="fitStart"/>
 </LinearLayout>

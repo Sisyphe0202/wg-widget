@@ -115,7 +115,8 @@ class RefreshService : Service() {
         if (ids.isEmpty()) return
 
         val views = RemoteViews(packageName, R.layout.wg_widget)
-        val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+        var anyOnline = false
 
         try {
             val conn = (URL(WgWidgetProvider.SNAPSHOT_URL).openConnection() as HttpURLConnection).apply {
@@ -124,7 +125,6 @@ class RefreshService : Service() {
             }
             val text = conn.inputStream.bufferedReader().use { it.readText() }
             val root = JSONObject(text)
-            val nowTs = root.optDouble("ts", System.currentTimeMillis() / 1000.0)
 
             val q = root.getJSONObject("quota")
             val remainGb = q.getLong("remaining") / 1_000_000_000.0
@@ -142,8 +142,6 @@ class RefreshService : Service() {
             val peers = root.getJSONArray("peers")
             val byPeer = root.optJSONObject("apps")?.optJSONObject("by_peer")
 
-            var totalNow = 0L
-            var anyOnline = false
             for (i in 0 until peers.length().coerceAtMost(2)) {
                 val p = peers.getJSONObject(i)
                 val ip = p.getString("ip")
@@ -151,7 +149,6 @@ class RefreshService : Service() {
                 val online = p.getBoolean("online")
                 if (online) anyOnline = true
                 val total = p.getLong("up") + p.getLong("down")
-                totalNow += total
                 val mark = if (online) "●" else "○"
                 val displayLabel = when (label) {
                     "手机" -> "Phone"
@@ -182,10 +179,10 @@ class RefreshService : Service() {
                 }
             }
 
-            val state = if (anyOnline) "running" else "stand"
-            getSharedPreferences("wg_state", Context.MODE_PRIVATE)
-                .edit().putString("dino_state", state).apply()
-            mgr.notifyAppWidgetViewDataChanged(ids, R.id.wg_dino_flipper)
+            views.setImageViewBitmap(
+                R.id.wg_dino_image,
+                renderDinoScene(if (anyOnline) Sprites.DINO_RUN1 else Sprites.DINO_STAND)
+            )
 
         } catch (e: Exception) {
             views.setTextViewText(R.id.wg_remaining, "—")
@@ -201,9 +198,7 @@ class RefreshService : Service() {
             views.setTextViewText(R.id.wg_peer2_total, "")
             views.setTextViewText(R.id.wg_peer2_app, "")
             views.setTextViewText(R.id.wg_peer2_app_size, "")
-            getSharedPreferences("wg_state", Context.MODE_PRIVATE)
-                .edit().putString("dino_state", "dead").apply()
-            mgr.notifyAppWidgetViewDataChanged(ids, R.id.wg_dino_flipper)
+            views.setImageViewBitmap(R.id.wg_dino_image, renderDinoScene(Sprites.DINO_DEAD))
         }
 
         val pi = PendingIntent.getForegroundService(
@@ -214,5 +209,17 @@ class RefreshService : Service() {
         views.setOnClickPendingIntent(R.id.wg_root, pi)
 
         for (id in ids) mgr.updateAppWidget(id, views)
+
+        if (anyOnline) {
+            val frame1 = renderDinoScene(Sprites.DINO_RUN1)
+            val frame2 = renderDinoScene(Sprites.DINO_RUN2)
+            for (i in 1..33) {
+                Thread.sleep(300)
+                val frame = if (i % 2 == 0) frame1 else frame2
+                val v = RemoteViews(packageName, R.layout.wg_widget)
+                v.setImageViewBitmap(R.id.wg_dino_image, frame)
+                for (id in ids) mgr.partiallyUpdateAppWidget(id, v)
+            }
+        }
     }
 }
