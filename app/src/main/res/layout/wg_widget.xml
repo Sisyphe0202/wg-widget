@@ -7,16 +7,16 @@
     android:padding="10dp"
     android:background="@drawable/widget_bg">
 
+    <!-- data row: wrap_content so separator sits right below text -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1.4"
             android:orientation="vertical"
             android:layout_marginEnd="6dp">
@@ -80,15 +80,16 @@
                 android:fontFamily="monospace"/>
         </LinearLayout>
 
+        <!-- vertical divider — fixed height, clipped by parent -->
         <LinearLayout
             android:layout_width="1dp"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
             android:orientation="vertical"
             android:background="#1F6F2C"/>
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
             android:layout_marginStart="6dp"
@@ -129,15 +130,16 @@
                 android:fontFamily="monospace"/>
         </LinearLayout>
 
+        <!-- vertical divider -->
         <LinearLayout
             android:layout_width="1dp"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
             android:orientation="vertical"
             android:background="#1F6F2C"/>
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
             android:layout_marginStart="6dp">
@@ -178,6 +180,7 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- horizontal separator — appears right below the text row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -186,10 +189,12 @@
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"/>
 
+    <!-- pig image: fills remaining space, centered -->
     <ImageView
         android:id="@+id/wg_dino_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitCenter"/>
+
 </LinearLayout>
