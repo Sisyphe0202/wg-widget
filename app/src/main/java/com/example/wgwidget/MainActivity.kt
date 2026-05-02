@@ -77,13 +77,14 @@ class MainActivity : Activity() {
             }
             val body = apiConn.inputStream.bufferedReader().use { it.readText() }
             val release = JSONObject(body)
-            val publishedAt = release.optString("published_at", "?")
             val assets = release.getJSONArray("assets")
             var apkUrl: String? = null
+            var apkUpdated = "?"
             for (i in 0 until assets.length()) {
                 val a = assets.getJSONObject(i)
                 if (a.getString("name").endsWith(".apk")) {
                     apkUrl = a.getString("browser_download_url")
+                    apkUpdated = a.optString("updated_at", "?")
                     break
                 }
             }
@@ -92,7 +93,7 @@ class MainActivity : Activity() {
                 return
             }
 
-            handler.post { status.text = "下载中…\n$publishedAt\n$apkUrl" }
+            handler.post { status.text = "下载中…\nAPK 更新于 $apkUpdated" }
 
             val apkFile = File(cacheDir, "update.apk")
             if (apkFile.exists()) apkFile.delete()
