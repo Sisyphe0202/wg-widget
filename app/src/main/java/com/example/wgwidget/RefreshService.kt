@@ -27,33 +27,34 @@ class RefreshService : Service() {
         private const val NOTIF_ID = 7
         private val executor = Executors.newSingleThreadExecutor()
 
-        // pig sprite colors
-        private val B = Color.parseColor("#D4864E")  // body
-        private val S = Color.parseColor("#AA5C2E")  // snout
-        private val E = Color.parseColor("#1A0800")  // eyes / nostrils
+        // brain-with-legs sprite colors
+        private val B = Color.parseColor("#3FB950")  // brain body
+        private val S = Color.parseColor("#1F6F2C")  // fold shadow
         private const val O = 0                      // transparent
 
-        private val PIG = arrayOf(
-            intArrayOf(O, O, B, B, O, O, O, O, B, B, O, O),  // ears
+        //   12 cols x 12 rows — brain bumps on top, two legs at bottom
+        private val BRAIN = arrayOf(
+            intArrayOf(O, O, B, B, O, B, B, O, B, B, O, O),  //  3 bumps
             intArrayOf(O, B, B, B, B, B, B, B, B, B, B, O),
             intArrayOf(B, B, B, B, B, B, B, B, B, B, B, B),
-            intArrayOf(B, B, E, B, B, B, B, B, B, E, B, B),  // eyes
+            intArrayOf(B, S, B, B, S, B, B, S, B, B, S, B),  //  folds
             intArrayOf(B, B, B, B, B, B, B, B, B, B, B, B),
-            intArrayOf(B, B, S, S, S, S, S, S, S, S, B, B),  // snout
-            intArrayOf(B, B, S, E, S, S, S, S, E, S, B, B),  // nostrils
-            intArrayOf(B, B, S, S, S, S, S, S, S, S, B, B),
+            intArrayOf(B, S, B, B, S, B, B, S, B, B, S, B),  //  folds
             intArrayOf(B, B, B, B, B, B, B, B, B, B, B, B),
-            intArrayOf(B, B, O, O, B, B, B, B, O, O, B, B),  // legs
-            intArrayOf(B, B, O, O, B, B, B, B, O, O, B, B),
+            intArrayOf(O, B, B, B, B, B, B, B, B, B, B, O),
+            intArrayOf(O, O, B, B, B, B, B, B, B, B, O, O),
+            intArrayOf(O, O, O, B, B, O, O, B, B, O, O, O),  //  legs
+            intArrayOf(O, O, O, B, B, O, O, B, B, O, O, O),
+            intArrayOf(O, O, O, B, B, O, O, B, B, O, O, O),
         )
 
         private fun renderPig(): Bitmap {
             val px = 8
-            val bmp = Bitmap.createBitmap(PIG[0].size * px, PIG.size * px, Bitmap.Config.ARGB_8888)
+            val bmp = Bitmap.createBitmap(BRAIN[0].size * px, BRAIN.size * px, Bitmap.Config.ARGB_8888)
             val cv = Canvas(bmp)
             val paint = Paint().apply { isAntiAlias = false }
-            for (y in PIG.indices) for (x in PIG[y].indices) {
-                val c = PIG[y][x]
+            for (y in BRAIN.indices) for (x in BRAIN[y].indices) {
+                val c = BRAIN[y][x]
                 if (c != O) {
                     paint.color = c
                     cv.drawRect((x * px).toFloat(), (y * px).toFloat(),
