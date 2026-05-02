@@ -13,6 +13,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.IBinder
 import android.widget.RemoteViews
 import org.json.JSONObject
@@ -94,10 +95,8 @@ class RefreshService : Service() {
                     }
                 }
 
-                views.setImageViewBitmap(
-                    R.id.wg_dino_image,
-                    renderDinoScene(if (anyOnline) Sprites.DINO_RUN1 else Sprites.DINO_STAND)
-                )
+                val state = if (anyOnline) "running" else "stand"
+                views.setImageViewBitmap(R.id.wg_dino_image, renderClaudeFrame(state, true))
 
             } catch (e: Exception) {
                 views.setTextViewText(R.id.wg_remaining, "—")
@@ -113,7 +112,7 @@ class RefreshService : Service() {
                 views.setTextViewText(R.id.wg_peer2_total, "")
                 views.setTextViewText(R.id.wg_peer2_app, "")
                 views.setTextViewText(R.id.wg_peer2_app_size, "")
-                views.setImageViewBitmap(R.id.wg_dino_image, renderDinoScene(Sprites.DINO_DEAD))
+                views.setImageViewBitmap(R.id.wg_dino_image, renderClaudeFrame("dead", false))
             }
 
             val pi = PendingIntent.getForegroundService(
@@ -126,16 +125,59 @@ class RefreshService : Service() {
             for (id in ids) mgr.updateAppWidget(id, views)
 
             if (anyOnline) {
-                val frame1 = renderDinoScene(Sprites.DINO_RUN1)
-                val frame2 = renderDinoScene(Sprites.DINO_RUN2)
+                val frameOn  = renderClaudeFrame("running", true)
+                val frameOff = renderClaudeFrame("running", false)
                 for (i in 1..33) {
                     Thread.sleep(300)
-                    val frame = if (i % 2 == 0) frame1 else frame2
+                    // cursor on for 2 frames (600 ms), off for 2 frames — natural blink
+                    val frame = if ((i / 2) % 2 == 0) frameOn else frameOff
                     val v = RemoteViews(context.packageName, R.layout.wg_widget)
                     v.setImageViewBitmap(R.id.wg_dino_image, frame)
                     for (id in ids) mgr.partiallyUpdateAppWidget(id, v)
                 }
             }
+        }
+
+        private fun renderClaudeFrame(state: String, cursorOn: Boolean): Bitmap {
+            val W = 560; val H = 108
+            val bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888)
+            val cv = Canvas(bmp)
+            val tf = Typeface.MONOSPACE
+
+            val bright = Paint().apply { color = Color.parseColor("#3FB950"); isAntiAlias = true; typeface = tf }
+            val dim    = Paint().apply { color = Color.parseColor("#1F6F2C"); isAntiAlias = true; typeface = tf }
+            val mid    = Paint().apply { color = Color.parseColor("#7EE787"); isAntiAlias = true; typeface = tf }
+
+            // rounded border
+            val border = Paint(dim).apply { style = Paint.Style.STROKE; strokeWidth = 2f }
+            cv.drawRoundRect(1f, 1f, W - 1f, H - 1f, 10f, 10f, border)
+
+            // header  "◆ Claude Code"
+            bright.textSize = 28f
+            cv.drawText("◆ Claude Code", 14f, 34f, bright)
+
+            // separator
+            cv.drawRect(14f, 42f, W - 14f, 44f, dim)
+
+            // prompt line
+            val prm = Paint(bright).apply { textSize = 22f }
+            val msg = Paint(mid).apply   { textSize = 22f }
+            val promptStr  = "> "
+            val messageStr = when (state) {
+                "running" -> "Monitoring WireGuard"
+                "dead"    -> "Connection error"
+                else      -> "Idle"
+            }
+            cv.drawText(promptStr, 14f, 80f, prm)
+            cv.drawText(messageStr, 14f + prm.measureText(promptStr), 80f, msg)
+
+            // blinking cursor block
+            if (cursorOn && state == "running") {
+                val x = 14f + prm.measureText(promptStr) + msg.measureText(messageStr) + 5f
+                cv.drawRect(x, 60f, x + 14f, 84f, bright)
+            }
+
+            return bmp
         }
 
         private fun fmtGb(bytes: Long): String = "%.2f GB".format(bytes / 1_000_000_000.0)
@@ -149,43 +191,6 @@ class RefreshService : Service() {
 
         private fun trim(s: String, n: Int): String =
             if (s.length <= n) s else s.take(n - 1) + "…"
-
-        private fun renderDinoScene(dinoSprite: Array<String>): Bitmap {
-            val px = 4
-            val gridW = 70
-            val gridH = 23
-            val bmp = Bitmap.createBitmap(gridW * px, gridH * px, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bmp)
-            val green = Paint().apply {
-                color = Color.parseColor("#3FB950")
-                isAntiAlias = false
-            }
-            val dinoOy = gridH - dinoSprite.size - 1
-            drawSprite(canvas, dinoSprite, 0, dinoOy, px, green)
-            val cactus = Sprites.CACTUS_BIG
-            val cactusOx = gridW - cactus[0].length - 4
-            val cactusOy = gridH - cactus.size - 1
-            drawSprite(canvas, cactus, cactusOx, cactusOy, px, green)
-            val groundY = gridH - 1
-            canvas.drawRect(
-                0f, (groundY * px).toFloat(),
-                (gridW * px).toFloat(), ((groundY + 1) * px).toFloat(), green
-            )
-            return bmp
-        }
-
-        private fun drawSprite(c: Canvas, grid: Array<String>, ox: Int, oy: Int, px: Int, paint: Paint) {
-            for (y in grid.indices) {
-                val row = grid[y]
-                for (x in row.indices) {
-                    if (row[x] == 'X') {
-                        val left = ((ox + x) * px).toFloat()
-                        val top = ((oy + y) * px).toFloat()
-                        c.drawRect(left, top, left + px, top + px, paint)
-                    }
-                }
-            }
-        }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
