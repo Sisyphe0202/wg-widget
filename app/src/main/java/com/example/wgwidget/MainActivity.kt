@@ -77,14 +77,21 @@ class MainActivity : Activity() {
             }
             val body = apiConn.inputStream.bufferedReader().use { it.readText() }
             val release = JSONObject(body)
+            val remoteCode = Regex("versionCode=(\\d+)")
+                .find(release.optString("body", ""))
+                ?.groupValues?.get(1)?.toLongOrNull() ?: 0L
+            val installedCode = packageManager.getPackageInfo(packageName, 0).longVersionCode
+            if (remoteCode > 0 && remoteCode <= installedCode) {
+                handler.post { status.text = "已是最新版本 (#$installedCode)" }
+                return
+            }
+
             val assets = release.getJSONArray("assets")
             var apkUrl: String? = null
-            var apkUpdated = "?"
             for (i in 0 until assets.length()) {
                 val a = assets.getJSONObject(i)
                 if (a.getString("name").endsWith(".apk")) {
                     apkUrl = a.getString("browser_download_url")
-                    apkUpdated = a.optString("updated_at", "?")
                     break
                 }
             }
@@ -93,7 +100,7 @@ class MainActivity : Activity() {
                 return
             }
 
-            handler.post { status.text = "下载中…\nAPK 更新于 $apkUpdated" }
+            handler.post { status.text = "下载中… #$installedCode → #$remoteCode" }
 
             val apkFile = File(cacheDir, "update.apk")
             if (apkFile.exists()) apkFile.delete()
