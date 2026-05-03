@@ -6,26 +6,15 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import java.util.concurrent.TimeUnit
 
 class WgWidgetProvider : AppWidgetProvider() {
 
     companion object {
         const val SNAPSHOT_URL = "http://10.0.0.1:8088/api/snapshot"
-        const val WORK_NAME = "wg_periodic_refresh"
     }
 
-    override fun onUpdate(
-        context: Context,
-        mgr: AppWidgetManager,
-        ids: IntArray
-    ) {
-        schedulePeriodicRefresh(context)
+    override fun onUpdate(context: Context, mgr: AppWidgetManager, ids: IntArray) {
+        AlarmReceiver.schedule(context)
 
         val pi = PendingIntent.getForegroundService(
             context, 0,
@@ -44,21 +33,6 @@ class WgWidgetProvider : AppWidgetProvider() {
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
-        WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
-    }
-
-    private fun schedulePeriodicRefresh(context: Context) {
-        val request = PeriodicWorkRequestBuilder<RefreshWorker>(15, TimeUnit.MINUTES)
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            )
-            .build()
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            WORK_NAME,
-            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-            request
-        )
+        AlarmReceiver.cancel(context)
     }
 }
