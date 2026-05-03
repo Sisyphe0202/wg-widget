@@ -138,6 +138,7 @@ class MainActivity : Activity() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(intent)
+            status.text = "安装界面已打开。\n\n如提示"已安装更高版本"，\n请先卸载当前版本，再重新点"检查更新"。\n卸载后签名一致，之后升级永久正常。"
         } catch (e: Exception) {
             status.text = "安装触发失败\n${e.javaClass.simpleName}: ${e.message}"
         }
