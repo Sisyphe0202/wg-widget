@@ -9,10 +9,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.os.IBinder
 import android.widget.RemoteViews
 import org.json.JSONObject
@@ -26,43 +22,6 @@ class RefreshService : Service() {
         private const val CHANNEL_ID = "wg_refresh"
         private const val NOTIF_ID = 7
         private val executor = Executors.newSingleThreadExecutor()
-
-        // brain-with-legs sprite colors
-        private val B = Color.parseColor("#3FB950")  // brain body
-        private val S = Color.parseColor("#1F6F2C")  // fold shadow
-        private const val O = 0                      // transparent
-
-        //   12 cols x 12 rows — brain bumps on top, two legs at bottom
-        private val BRAIN = arrayOf(
-            intArrayOf(O, O, B, B, O, B, B, O, B, B, O, O),  //  3 bumps
-            intArrayOf(O, B, B, B, B, B, B, B, B, B, B, O),
-            intArrayOf(B, B, B, B, B, B, B, B, B, B, B, B),
-            intArrayOf(B, S, B, B, S, B, B, S, B, B, S, B),  //  folds
-            intArrayOf(B, B, B, B, B, B, B, B, B, B, B, B),
-            intArrayOf(B, S, B, B, S, B, B, S, B, B, S, B),  //  folds
-            intArrayOf(B, B, B, B, B, B, B, B, B, B, B, B),
-            intArrayOf(O, B, B, B, B, B, B, B, B, B, B, O),
-            intArrayOf(O, O, B, B, B, B, B, B, B, B, O, O),
-            intArrayOf(O, O, O, B, B, O, O, B, B, O, O, O),  //  legs
-            intArrayOf(O, O, O, B, B, O, O, B, B, O, O, O),
-            intArrayOf(O, O, O, B, B, O, O, B, B, O, O, O),
-        )
-
-        private fun renderPig(): Bitmap {
-            val px = 8
-            val bmp = Bitmap.createBitmap(BRAIN[0].size * px, BRAIN.size * px, Bitmap.Config.ARGB_8888)
-            val cv = Canvas(bmp)
-            val paint = Paint().apply { isAntiAlias = false }
-            for (y in BRAIN.indices) for (x in BRAIN[y].indices) {
-                val c = BRAIN[y][x]
-                if (c != O) {
-                    paint.color = c
-                    cv.drawRect((x * px).toFloat(), (y * px).toFloat(),
-                        ((x + 1) * px).toFloat(), ((y + 1) * px).toFloat(), paint)
-                }
-            }
-            return bmp
-        }
 
         fun doRefresh(context: Context) {
             val mgr = AppWidgetManager.getInstance(context)
@@ -144,8 +103,6 @@ class RefreshService : Service() {
                 views.setTextViewText(R.id.wg_peer2_app, "")
                 views.setTextViewText(R.id.wg_peer2_app_size, "")
             }
-
-            views.setImageViewBitmap(R.id.wg_dino_image, renderPig())
 
             val pi = PendingIntent.getForegroundService(
                 context, 0,
